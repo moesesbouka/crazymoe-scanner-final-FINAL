@@ -1,0 +1,9 @@
+{
+  "name": "crazymoe-scanner",
+  "version": "3.0.0",
+  "description": "CrazyMoe warehouse product scanner with server-side lookup",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}

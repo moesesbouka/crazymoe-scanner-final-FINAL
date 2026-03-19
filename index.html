@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="theme-color" content="#080808"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="CM Scanner"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+<title>CrazyMoe Scanner Ultimate</title>
+<style>
+:root{
+  --bg:#080808;--s1:#111;--s2:#1a1a1a;--s3:#222;
+  --border:rgba(255,255,255,.07);--border2:rgba(249,115,22,.25);
+  --text:#f2f2f2;--muted:#888;--dim:#555;
+  --accent:#f97316;--accent2:#fbbf24;--accentd:#c2530a;
+  --ok:#22c55e;--err:#ef4444;--warn:#f59e0b;--fb:#1877f2;
+  --r:18px;--r2:28px;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5}
+input,select,textarea,button{font-family:inherit}
+.app{max-width:820px;margin:0 auto;padding:calc(12px + var(--safe-top)) 14px calc(80px + var(--safe-bot))}
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:14px;gap:8px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.05em;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:var(--r);border:1px solid var(--border);background:var(--s2);color:var(--text);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .15s;white-space:nowrap;-webkit-user-select:none;user-select:none}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#000;box-shadow:0 4px 20px rgba(249,115,22,.3)}
+.btn.primary:active{background:var(--accentd)}
+.btn.ghost{background:transparent;border-color:var(--border)}
+.btn.ghost:hover{background:var(--s2)}
+.btn.amber{background:var(--accent2);border-color:var(--accent2);color:#000}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#000}
+.btn.danger{background:var(--err);border-color:var(--err)}
+.btn.fb{background:var(--fb);border-color:var(--fb);color:#fff}
+.btn.sm{padding:8px 12px;font-size:.82rem;border-radius:12px}
+.btn.xs{padding:6px 10px;font-size:.78rem;border-radius:10px}
+.btn[disabled]{opacity:.38;pointer-events:none}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:20px;margin-bottom:14px}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.03em;margin-bottom:4px}
+.card-sub{color:var(--muted);font-size:.86rem;margin-bottom:14px}
+.hidden{display:none!important}
+.field{width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:.92rem;outline:none;transition:border-color .15s}
+.field:focus{border-color:var(--accent)}
+.field::placeholder{color:var(--dim)}
+select.field option{background:var(--s2);color:var(--text)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+textarea.field{min-height:110px;resize:vertical}
+.stepbar{display:flex;margin-bottom:14px}
+.stepbar-item{flex:1;text-align:center;padding:9px 3px;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.04em;background:var(--s2);border:1px solid var(--border);color:var(--dim);transition:all .2s}
+.stepbar-item:first-child{border-radius:var(--r) 0 0 var(--r)}
+.stepbar-item:last-child{border-radius:0 var(--r) var(--r) 0}
+.stepbar-item+.stepbar-item{margin-left:-1px}
+.stepbar-item.active{background:var(--accent);border-color:var(--accent);color:#000;z-index:1}
+.stepbar-item.done{background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.2);color:var(--accent2)}
+.status{font-size:.84rem;min-height:18px;margin-top:9px;color:var(--muted)}
+.status.ok{color:var(--ok)}.status.err{color:var(--err)}.status.warn{color:var(--warn)}
+#reader{width:100%;min-height:250px;overflow:hidden;border-radius:16px;background:#000;border:1px solid var(--border)}
+.results-list{display:grid;gap:12px;margin-top:4px}
+.result-card{display:grid;grid-template-columns:100px 1fr;gap:12px;padding:13px;border-radius:var(--r);border:1px solid var(--border);background:var(--s2);cursor:pointer;transition:border-color .15s}
+.result-card:hover,.result-card.selected-match{border-color:var(--ok)}
+.result-card.selected-match{background:rgba(34,197,94,.04)}
+.result-thumb{width:100px;height:100px;object-fit:cover;border-radius:11px;background:var(--s3)}
+.result-thumb-empty{width:100px;height:100px;border-radius:11px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:2rem}
+.result-info h3{font-weight:700;font-size:.95rem;line-height:1.3;margin-bottom:5px}
+.result-info .desc{font-size:.79rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.src-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2);color:var(--accent2);font-size:.7rem;font-weight:700;letter-spacing:.04em;margin-bottom:5px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.chip{padding:3px 8px;border-radius:999px;background:var(--s3);border:1px solid var(--border);color:var(--muted);font-size:.72rem}
+.cam-wrap{position:relative;border-radius:var(--r2);overflow:hidden;background:#000;border:1px solid var(--border);margin-bottom:12px}
+video{display:block;width:100%;max-height:50vh;object-fit:cover}
+.cam-controls{position:absolute;bottom:0;left:0;right:0;padding:10px;background:linear-gradient(transparent,rgba(0,0,0,.7));display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.focus-ring{position:absolute;width:64px;height:64px;border-radius:12px;border:2px solid #fff;box-shadow:0 0 0 2px rgba(249,115,22,.4);transform:translate(-50%,-50%) scale(.7);opacity:0;transition:.15s;pointer-events:none}
+.focus-ring.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.photo-tile{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:var(--s3);border:1px solid var(--border)}
+.photo-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-tile .del-btn{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:999px;border:none;background:rgba(0,0,0,.72);color:#fff;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.photo-tile .idx-label{position:absolute;bottom:4px;left:6px;font-size:.68rem;font-weight:700;color:rgba(255,255,255,.7);text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.photo-add-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:1/1;border-radius:14px;border:2px dashed var(--border);cursor:pointer;font-size:1.4rem;gap:3px}
+.photo-add-tile span{font-size:.68rem;color:var(--muted)}
+.review-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.review-row:last-child{border-bottom:none}
+.review-row .lbl{color:var(--muted);font-size:.85rem;min-width:74px}
+.review-row .val{font-weight:600;text-align:right;font-size:.88rem;word-break:break-word}
+.review-photos{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px}
+.review-photos img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:9px;border:1px solid var(--border)}
+.dash-item{display:flex;align-items:center;gap:13px;padding:13px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:9px}
+.dash-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;background:var(--s3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.dash-info h4{font-weight:700;font-size:.92rem;margin-bottom:2px}
+.dash-info .meta{font-size:.75rem;color:var(--muted)}
+.install-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 15px;background:linear-gradient(90deg,rgba(249,115,22,.1),rgba(251,191,36,.06));border:1px solid rgba(249,115,22,.2);border-radius:var(--r);margin-bottom:14px}
+.install-bar p{font-size:.85rem;color:var(--accent2)}
+.install-bar .close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:4px}
+.settings-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0}
+.settings-toggle h3{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.03em;color:var(--muted)}
+.settings-toggle svg{transition:transform .2s;flex-shrink:0}
+.settings-toggle.open svg{transform:rotate(180deg)}
+.settings-body{overflow:hidden;max-height:0;transition:max-height .35s ease}
+.settings-body.open{max-height:700px}
+.no-result-card{text-align:center;padding:24px 18px}
+.no-result-card .icon{font-size:2.6rem;margin-bottom:8px}
+.no-result-card h3{font-size:1.05rem;font-weight:700;margin-bottom:5px}
+.no-result-card p{color:var(--muted);font-size:.84rem;margin-bottom:14px}
+.url-paste-box{background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);padding:14px;margin-top:14px;text-align:left}
+.url-paste-box .lbl{font-size:.78rem;font-weight:700;color:var(--accent2);margin-bottom:6px}
+.url-paste-row{display:flex;gap:7px;margin-top:6px}
+.url-paste-row .field{font-size:.82rem;padding:9px 11px}
+.saved-link{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:var(--accent2);font-size:.74rem;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;text-decoration:none;margin-top:6px}
+.saved-link:hover{background:rgba(251,191,36,.2)}
+.scrape-card{border:1px solid rgba(249,115,22,.3);background:rgba(249,115,22,.04);border-radius:var(--r);padding:13px;margin-top:10px}
+.scrape-card h4{font-weight:700;font-size:.95rem;margin-bottom:4px}
+.scrape-card .sm{font-size:.79rem;color:var(--muted);margin-bottom:8px}
+/* BULK */
+.progress-wrap{background:var(--s3);border-radius:999px;height:8px;overflow:hidden;margin:12px 0}
+.progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s ease;min-width:4px}
+.sbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:.72rem;font-weight:700}
+.sbadge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sbadge.queued{background:rgba(136,136,136,.12);color:#aaa}.sbadge.queued::before{background:#666}
+.sbadge.processing{background:rgba(249,115,22,.12);color:var(--accent);animation:blink 1s infinite}.sbadge.processing::before{background:var(--accent)}
+.sbadge.found{background:rgba(251,191,36,.12);color:var(--accent2)}.sbadge.found::before{background:var(--accent2)}
+.sbadge.no-match{background:rgba(239,68,68,.1);color:#f88}.sbadge.no-match::before{background:var(--err)}
+.sbadge.ready{background:rgba(34,197,94,.12);color:var(--ok)}.sbadge.ready::before{background:var(--ok)}
+.sbadge.posted{background:rgba(24,119,242,.12);color:#7aaff5}.sbadge.posted::before{background:var(--fb)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
+.stats-row{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.stat-pill{padding:5px 12px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--s2);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.stat-pill.active{border-color:var(--accent);color:var(--accent)}
+.bulk-item{display:flex;align-items:center;gap:11px;padding:12px 13px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;transition:border-color .15s;cursor:pointer}
+.bulk-item:hover{border-color:var(--border2)}
+.bulk-item.sel-item{border-color:rgba(249,115,22,.35)}
+.bi-check{flex-shrink:0;width:20px;height:20px;border-radius:6px;border:2px solid var(--border);background:var(--s3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.bi-check.on{background:var(--accent);border-color:var(--accent)}
+.bi-check.on::after{content:'✓';color:#000;font-size:.75rem;font-weight:900}
+.bi-thumb{width:48px;height:48px;border-radius:10px;object-fit:cover;background:var(--s3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.bi-info{flex:1;min-width:0}
+.bi-title{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bi-meta{font-size:.74rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bi-actions{display:flex;gap:5px;flex-shrink:0}
+.bulk-float{position:fixed;bottom:calc(14px + var(--safe-bot));left:50%;transform:translateX(-50%);background:var(--s1);border:1px solid var(--border2);border-radius:var(--r2);padding:11px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.75);z-index:200;max-width:760px;width:calc(100% - 28px);opacity:0;pointer-events:none;transition:opacity .2s}
+.bulk-float.on{opacity:1;pointer-events:auto}
+.bulk-float-cnt{font-weight:700;font-size:.88rem;color:var(--accent2);white-space:nowrap}
+.bulk-float-acts{display:flex;gap:6px;flex:1;justify-content:flex-end;flex-wrap:wrap}
+.be-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.be-back{background:none;border:1px solid var(--border);border-radius:12px;color:var(--text);padding:8px 14px;cursor:pointer;font-weight:700;font-size:.84rem}
+.be-title-txt{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.03em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.be-tabs{display:flex;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.be-tab{flex:1;padding:9px 4px;background:var(--s2);border:none;color:var(--muted);font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
+.be-tab.on{background:var(--accent);color:#000}
+.be-panel{display:none}
+.be-panel.on{display:block}
+.fb-box{background:linear-gradient(135deg,rgba(24,119,242,.1),rgba(24,119,242,.03));border:1px solid rgba(24,119,242,.2);border-radius:var(--r2);padding:22px;text-align:center}
+.fb-box h3{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.03em;margin-bottom:6px}
+.fb-box p{color:var(--muted);font-size:.84rem;margin-bottom:16px;line-height:1.5}
+@media(max-width:560px){
+  .field-grid{grid-template-columns:1fr}
+  .result-card{grid-template-columns:80px 1fr}
+  .result-thumb,.result-thumb-empty{width:80px;height:80px}
+  .btn-grid{grid-template-columns:1fr}
+  .bi-actions .btn.xs:not(.primary){display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="install-bar hidden" id="installBar">
+  <p>📲 Add to home screen for the best experience</p>
+  <button class="btn primary sm" id="installBtn">Install</button>
+  <button class="close" id="installClose">✕</button>
+</div>
+
+<div class="header">
+  <div class="logo">CrazyMoe</div>
+  <nav class="nav">
+    <button class="btn sm primary" id="navScanner">📷 Scan</button>
+    <button class="btn sm ghost" id="navBulk">📋 Bulk</button>
+    <button class="btn sm ghost" id="navDash">📦 Saved</button>
+  </nav>
+</div>
+
+<!-- ═══ SCANNER PAGE ═══ -->
+<div id="pageScanner">
+  <div class="card">
+    <div class="settings-toggle" id="settingsToggle">
+      <h3>⚙️ Supabase Setup</h3>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="settings-body" id="settingsBody">
+      <div style="height:12px"></div>
+      <div class="field-grid">
+        <input class="field" id="cfgUrl" placeholder="Supabase URL"/>
+        <input class="field" id="cfgKey" placeholder="Supabase anon key" type="password"/>
+        <input class="field" id="cfgTable" placeholder="Table name" value="active_listings"/>
+        <input class="field" id="cfgBucket" placeholder="Storage bucket" value="listing-photos"/>
+        <input class="field" id="cfgFolder" placeholder="Storage folder" value="scanner-intake"/>
+        <input class="field" id="cfgDiscount" type="number" step="1" min="0" max="99" placeholder="Discount % off source price"/>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" id="btnSaveSettings">Save Settings</button>
+        <button class="btn ghost" id="btnContinueDraft">Continue Draft</button>
+      </div>
+      <div class="status" id="stSettings"></div>
+    </div>
+  </div>
+  <div class="stepbar" id="stepbar">
+    <div class="stepbar-item active" data-step="1">1·Identify</div>
+    <div class="stepbar-item" data-step="2">2·Results</div>
+    <div class="stepbar-item" data-step="3">3·Photos</div>
+    <div class="stepbar-item" data-step="4">4·Details</div>
+    <div class="stepbar-item" data-step="5">5·Review</div>
+  </div>
+  <div class="card step-panel" id="step1">
+    <div class="card-title">Identify the Item</div>
+    <div class="card-sub">Live scan, upload barcode image, or type UPC / model number</div>
+    <div class="btn-grid">
+      <button class="btn primary" id="btnStartScan">📷 Live Scan</button>
+      <button class="btn ghost" id="btnStopScan" disabled>⏹ Stop Scan</button>
+      <button class="btn ghost" id="btnUploadBarcode">🧾 Upload Barcode</button>
+      <button class="btn ghost" id="btnUploadProduct">🖼 Add Photos</button>
+    </div>
+    <input type="file" accept="image/*" id="inputBarcode" class="hidden"/>
+    <input type="file" accept="image/*" multiple id="inputProduct" class="hidden"/>
+    <div id="reader" class="hidden" style="margin-top:12px"></div>
+    <div style="display:flex;gap:8px;margin-top:13px">
+      <input class="field" id="lookupText" placeholder="UPC or model number" style="flex:1" autocomplete="off"/>
+      <button class="btn primary" id="btnLookup">Look Up</button>
+    </div>
+    <div class="status" id="stIdentify"></div>
+  </div>
+  <div class="card step-panel hidden" id="step2">
+    <div class="card-title">Pick the Right Match</div>
+    <div class="card-sub" id="resultsSubtitle">Searching…</div>
+    <div class="results-list" id="resultsList"></div>
+    <div class="btn-row" style="margin-top:12px"><button class="btn ghost" id="btnBackToIdentify">← Back</button></div>
+    <div class="status" id="stResults"></div>
+  </div>
+  <div class="card step-panel hidden" id="step3">
+    <div class="card-title">Photos</div>
+    <div class="card-sub">Capture or upload up to 10. Drag to reorder.</div>
+    <div class="cam-wrap">
+      <video id="camVideo" autoplay playsinline muted></video>
+      <div class="focus-ring" id="focusRing"></div>
+      <div class="cam-controls">
+        <button class="btn sm ghost" id="btnCamStart">Start</button>
+        <button class="btn sm ghost" id="btnCamSwitch">Flip</button>
+        <button class="btn sm primary" id="btnCapture">📸 Capture</button>
+        <button class="btn sm ghost" id="btnBurst">Burst ×3</button>
+      </div>
+    </div>
+    <div class="photos-grid" id="photosGrid"></div>
+    <input type="file" accept="image/*" multiple id="inputPhotoFile" class="hidden"/>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn ghost" id="btnAddPhotoFile">📁 From File</button>
+      <button class="btn ghost" id="btnBackToResults">← Results</button>
+      <button class="btn primary" id="btnToDetails">Details →</button>
+    </div>
+    <div class="status" id="stPhotos"></div>
+  </div>
+  <div class="card step-panel hidden" id="step4">
+    <div class="card-title">Item Details</div>
+    <div class="card-sub">Review and edit before saving</div>
+    <div class="field-grid">
+      <input class="field" id="fTitle" placeholder="Title" style="grid-column:1/-1"/>
+      <input class="field" id="fPrice" type="number" step="0.01" placeholder="Price ($)"/>
+      <select class="field" id="fCondition">
+        <option>New</option><option>Used – Like New</option>
+        <option selected>Used – Good</option><option>Used – Fair</option>
+        <option>For Parts / Not Working</option>
+      </select>
+      <input class="field" id="fSource" placeholder="Source (e.g. Warehouse)" style="grid-column:1/-1"/>
+    </div>
+    <textarea class="field" id="fDescription" placeholder="Description (optional)"></textarea>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn ghost" id="btnBackToPhotos">← Photos</button>
+      <button class="btn primary" id="btnToReview">Review →</button>
+    </div>
+    <div class="status" id="stDetails"></div>
+  </div>
+  <div class="card step-panel hidden" id="step5">
+    <div class="card-title">Review &amp; Save</div>
+    <div class="card-sub">Confirm before saving</div>
+    <div id="reviewContent"></div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn ghost" id="btnBackToDetails">← Details</button>
+      <button class="btn amber" id="btnSaveDraft">Save Draft</button>
+      <button class="btn ok" id="btnSaveSupabase">💾 Save</button>
+      <button class="btn fb" id="btnLaunchFBSingle">📘 Launch to FB</button>
+    </div>
+    <div class="status" id="stSave"></div>
+  </div>
+</div>
+
+<!-- ═══ BULK PAGE ═══ -->
+<div id="pageBulk" class="hidden">
+  <div class="card" id="bulkImportCard">
+    <div class="card-title">📋 Bulk Import</div>
+    <div class="card-sub">Paste UPCs or model numbers — one per line, or upload a CSV. Max 50 per batch.</div>
+    <textarea class="field" id="bulkInput" placeholder="012345678901&#10;097855154590&#10;Sony WH-1000XM5&#10;..." style="min-height:130px;font-family:monospace;font-size:.84rem"></textarea>
+    <div style="display:flex;gap:8px;margin-top:9px;align-items:center;flex-wrap:wrap">
+      <button class="btn ghost sm" id="btnBulkCSV">📄 Upload CSV</button>
+      <input type="file" accept=".csv,.txt" id="inputBulkCSV" class="hidden"/>
+      <button class="btn gold sm" id="btnBulkImages">📸 Bulk Identifier Photos</button>
+      <input type="file" accept="image/*" multiple id="inputBulkImages" class="hidden"/>
+      <span class="status" id="stBulkImport" style="margin-top:0;flex:1"></span>
+    </div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn primary" id="btnBulkStart">▶ Process Queue</button>
+      <button class="btn ghost" id="btnBulkClear">✕ Clear All</button>
+      <button class="btn ghost hidden" id="btnBulkResume">⟳ Resume</button>
+    </div>
+  </div>
+  <div class="card hidden" id="bulkProgressCard">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="card-title" style="margin-bottom:0">Processing</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn sm ghost" id="btnBulkPause">⏸ Pause</button>
+        <button class="btn sm danger" id="btnBulkCancel">✕ Cancel</button>
+      </div>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" id="bulkFill" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)">
+      <span id="bulkProgLabel">0 / 0</span><span id="bulkProgPct">0%</span>
+    </div>
+    <div class="status" id="stBulkProg"></div>
+  </div>
+  <div class="stats-row hidden" id="bulkStatsRow">
+    <div class="stat-pill active" data-bf="all" id="spAll">All 0</div>
+    <div class="stat-pill" data-bf="found" id="spFound">Found 0</div>
+    <div class="stat-pill" data-bf="no-match" id="spNoMatch">No Match 0</div>
+    <div class="stat-pill" data-bf="ready" id="spReady">Ready 0</div>
+    <div class="stat-pill" data-bf="posted" id="spPosted">Posted 0</div>
+  </div>
+  <div class="hidden" id="bulkActionsBar" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+    <button class="btn xs ghost" id="btnSelAll">Select All</button>
+    <button class="btn xs ghost" id="btnSelNone">None</button>
+    <div style="flex:1"></div>
+    <button class="btn sm ghost" id="btnBulkSaveReady">💾 Save All Ready</button>
+    <button class="btn sm fb" id="btnBulkLaunch">📘 Launch Selected to FB</button>
+  </div>
+  <div id="bulkList"></div>
+</div>
+
+<!-- ═══ BULK EDITOR PAGE ═══ -->
+<div id="pageBulkEditor" class="hidden">
+  <div class="be-header">
+    <button class="be-back" id="btnBeBack">← Queue</button>
+    <div class="be-title-txt" id="beTitleTxt">Edit Item</div>
+    <button class="btn xs ghost" id="btnBePrev">‹</button>
+    <button class="btn xs ghost" id="btnBeNext">›</button>
+  </div>
+  <div class="be-tabs">
+    <button class="be-tab on" data-bt="match">1 · Match</button>
+    <button class="be-tab" data-bt="photos">2 · Photos</button>
+    <button class="be-tab" data-bt="details">3 · Details</button>
+    <button class="be-tab" data-bt="launch">4 · Launch</button>
+  </div>
+  <div class="be-panel on" id="bePanel-match">
+    <div class="card">
+      <div class="card-title">Pick the Match</div>
+      <div class="card-sub" id="beMatchSub">Select the correct product</div>
+      <div id="beLabelPreview"></div><div class="results-list" id="beMatchList"></div>
+      <div class="status" id="stBeMatch"></div>
+    </div>
+  </div>
+  <div class="be-panel" id="bePanel-photos">
+    <div class="card">
+      <div class="card-title">Photos</div>
+      <div class="card-sub">Take or upload up to 10 photos</div>
+      <div class="cam-wrap">
+        <video id="beCamVid" autoplay playsinline muted></video>
+        <div class="cam-controls">
+          <button class="btn sm ghost" id="btnBeCamStart">Start</button>
+          <button class="btn sm ghost" id="btnBeCamFlip">Flip</button>
+          <button class="btn sm primary" id="btnBeCapture">📸 Capture</button>
+          <button class="btn sm ghost" id="btnBeBurst">Burst ×3</button>
+        </div>
+      </div>
+      <div class="photos-grid" id="bePhotosGrid"></div>
+      <input type="file" accept="image/*" multiple id="inputBePhoto" class="hidden"/>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn ghost" id="btnBeAddPhoto">📁 From File</button>
+      </div>
+      <div class="status" id="stBePhotos"></div>
+    </div>
+  </div>
+  <div class="be-panel" id="bePanel-details">
+    <div class="card">
+      <div class="card-title">Item Details</div>
+      <div class="field-grid">
+        <input class="field" id="beTitle" placeholder="Title" style="grid-column:1/-1"/>
+        <input class="field" id="bePrice" type="number" step="0.01" placeholder="Price ($)"/>
+        <select class="field" id="beCondition">
+          <option>New</option><option>Used – Like New</option>
+          <option selected>Used – Good</option><option>Used – Fair</option>
+          <option>For Parts / Not Working</option>
+        </select>
+        <input class="field" id="beSource" placeholder="Source" style="grid-column:1/-1"/>
+      </div>
+      <textarea class="field" id="beDescription" placeholder="Description"></textarea>
+      <div id="beSavedLink" style="margin-top:10px"></div>
+      <div class="url-paste-box" style="margin-top:12px">
+        <div class="lbl">🔗 Reference URL (optional)</div>
+        <div style="font-size:.74rem;color:var(--muted);margin-bottom:4px">Paste a product page URL — pulls title, price, and description automatically.</div>
+        <div class="url-paste-row">
+          <input class="field" id="beScrapeUrlDetails" placeholder="https://..." style="flex:1"/>
+          <button class="btn primary" id="btnBeScrapeDetails">Fetch</button>
+        </div>
+        <div id="beScrapeAreaDetails"></div>
+        <div class="status" id="stBeScrapeDetails" style="margin-top:7px"></div>
+      </div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn primary" id="btnBeSaveDetails">Save Details</button>
+      </div>
+      <div class="status" id="stBeDetails"></div>
+    </div>
+  </div>
+  <div class="be-panel" id="bePanel-launch">
+    <div class="card">
+      <div class="fb-box">
+        <div style="font-size:2.6rem;margin-bottom:10px">📘</div>
+        <h3>Launch to Facebook Marketplace</h3>
+        <p>Your listing is written to a shared slot your CrazyMoe Chrome extension reads on the FB Marketplace page. FB opens and the extension auto-fills the form. Listing text is also copied to clipboard as backup.</p>
+        <div class="btn-row" style="justify-content:center;margin-top:0">
+          <button class="btn fb" id="btnBeLaunchFB">📘 Open FB + Auto-fill</button>
+          <button class="btn ghost" id="btnBeCopyText">📋 Copy Text Only</button>
+        </div>
+        <div class="status" id="stBeLaunch"></div>
+      </div>
+      <div style="margin-top:14px">
+        <div id="beLaunchRefLink"></div>
+        <div class="btn-row">
+          <button class="btn ok" id="btnBeSaveSupa">💾 Save to Supabase</button>
+          <button class="btn amber" id="btnBeMarkPosted">✓ Mark as Posted</button>
+        </div>
+        <div class="status" id="stBeSave"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="pageDash" class="hidden">
+  <div class="card">
+    <div class="card-title">Saved Items</div>
+    <div class="card-sub">Items saved from this device</div>
+    <div id="dashList"></div>
+  </div>
+</div>
+
+<!-- FLOATING BULK BAR -->
+<div class="bulk-float" id="bulkFloat">
+  <div class="bulk-float-cnt" id="bulkFloatCnt">0 selected</div>
+  <div class="bulk-float-acts">
+    <button class="btn sm fb" id="floatLaunch">📘 Launch to FB</button>
+    <button class="btn sm ok" id="floatSave">💾 Save</button>
+    <button class="btn sm danger" id="floatDel">🗑</button>
+  </div>
+</div>
+
+</div>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+'use strict';
+const LSKEY='crazymoe_v4', LSKEY_B='crazymoe_bulk_v2';
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+let S={step:1,lookupQuery:'',results:[],selected:null,photos:[],
+  settings:{url:'',key:'',table:'active_listings',bucket:'listing-photos',folder:'scanner-intake',discount:''},
+  drafts:[],draft:null,camFacing:'environment',camStream:null,scanner:null,scanning:false};
+
+let B={queue:[],processing:false,pause:false,editId:null,filter:'all',
+  sel:new Set(),beCam:null,beFacing:'environment',fbQ:[],fbQIdx:0};
+
+function setStatus(id,msg,k=''){const el=$(id);if(!el)return;el.className='status'+(k?' '+k:'');el.textContent=msg||'';}
+function isUPC(v){return /^\d{8,14}$/.test(String(v||'').trim());}
+function applyDisc(p){const n=parseFloat(p);if(!isFinite(n)||n<=0)return '';const d=parseFloat(S.settings.discount);return(isFinite(d)&&d>0)?(n*(1-d/100)).toFixed(2):n.toFixed(2);}
+
+function persist(){try{localStorage.setItem(LSKEY,JSON.stringify({settings:S.settings,draft:S.draft,drafts:S.drafts}));}catch(e){}}
+function persistB(){try{localStorage.setItem(LSKEY_B,JSON.stringify({queue:B.queue.map(x=>({...x,photos:[]})) }));}catch(e){}}
+function hydrate(){
+  try{const d=JSON.parse(localStorage.getItem(LSKEY)||'{}');if(d.settings)Object.assign(S.settings,d.settings);if(d.draft)S.draft=d.draft;if(Array.isArray(d.drafts))S.drafts=d.drafts;}catch(e){}
+  try{const d=JSON.parse(localStorage.getItem(LSKEY_B)||'{}');if(Array.isArray(d.queue)&&d.queue.length){B.queue=d.queue;$('btnBulkResume').classList.remove('hidden');}}catch(e){}
+}
+function applySettingsUI(){$('cfgUrl').value=S.settings.url||'';$('cfgKey').value=S.settings.key||'';$('cfgTable').value=S.settings.table||'active_listings';$('cfgBucket').value=S.settings.bucket||'listing-photos';$('cfgFolder').value=S.settings.folder||'scanner-intake';$('cfgDiscount').value=S.settings.discount||'';}
+function readSettings(){S.settings.url=$('cfgUrl').value.trim();S.settings.key=$('cfgKey').value.trim();S.settings.table=$('cfgTable').value.trim()||'active_listings';S.settings.bucket=$('cfgBucket').value.trim()||'listing-photos';S.settings.folder=$('cfgFolder').value.trim()||'scanner-intake';S.settings.discount=$('cfgDiscount').value.trim();persist();}
+
+function showPage(pg){
+  ['pageScanner','pageBulk','pageBulkEditor','pageDash'].forEach(id=>$(id).classList.toggle('hidden',id!=='page'+cap(pg)));
+  $('navScanner').className='btn sm '+(pg==='scanner'?'primary':'ghost');
+  $('navBulk').className='btn sm '+(pg==='bulk'||pg==='bulkEditor'?'primary':'ghost');
+  $('navDash').className='btn sm '+(pg==='dash'?'primary':'ghost');
+  if(pg==='dash')renderDashboard();
+  if(pg==='bulk'){renderBulkList();updateStats();}
+  if(pg!=='scanner'&&pg!=='bulkEditor'){stopCam();}
+  if(pg!=='bulkEditor'){stopBeCam();}
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function initAccordion(){
+  const t=$('settingsToggle'),b=$('settingsBody');
+  if(!S.settings.url){t.classList.add('open');b.classList.add('open');}
+  t.addEventListener('click',()=>{const o=b.classList.contains('open');t.classList.toggle('open',!o);b.classList.toggle('open',!o);});
+}
+
+function setStep(n){
+  S.step=n;
+  document.querySelectorAll('.stepbar-item').forEach(el=>{const sn=+el.dataset.step;el.className='stepbar-item'+(sn===n?' active':sn<n?' done':'');});
+  document.querySelectorAll('.step-panel').forEach((el,i)=>el.classList.toggle('hidden',i!==n-1));
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(n===3){renderPhotos();startCam();}
+  if(n!==3)stopCam();
+  if(n===4)hydrateDetails();
+  if(n===5){syncDetails();renderReview();}
+}
+
+async function startLiveScan(){
+  if(S.scanning)return;
+  $('reader').classList.remove('hidden');setStatus('stIdentify','Starting scanner…');
+  try{
+    S.scanner=new Html5Qrcode('reader');
+    await S.scanner.start({facingMode:'environment'},{fps:12,qrbox:{width:250,height:155}},
+      async d=>{await stopLiveScan();$('lookupText').value=d;runLookup(d);},()=>{});
+    S.scanning=true;$('btnStopScan').disabled=false;setStatus('stIdentify','Scanner active','ok');
+  }catch(e){$('reader').classList.add('hidden');setStatus('stIdentify','Camera unavailable — try uploading a barcode image','warn');}
+}
+async function stopLiveScan(){
+  if(S.scanner&&S.scanning){try{await S.scanner.stop();}catch(_){}try{await S.scanner.clear();}catch(_){}}
+  S.scanner=null;S.scanning=false;$('reader').classList.add('hidden');$('btnStopScan').disabled=true;
+}
+async function scanFileForBarcode(file){
+  const id='qt'+Date.now();const div=document.createElement('div');div.id=id;div.style.display='none';document.body.appendChild(div);
+  const qr=new Html5Qrcode(id);
+  try{const c=await qr.scanFile(file,true);try{await qr.clear();}catch(_){}div.remove();return c;}
+  catch(_){try{await qr.clear();}catch(_2){}div.remove();return null;}
+}
+
+async function doLookup(q){
+  const r=await fetch('/.netlify/functions/lookup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})});
+  if(!r.ok)throw new Error(`Server error: ${r.status}`);
+  return r.json();
+}
+
+async function runLookup(raw){
+  const q=String(raw||'').trim();if(!q)return setStatus('stIdentify','Enter a UPC or model number','warn');
+  S.lookupQuery=q;stopLiveScan();setStep(2);$('resultsList').innerHTML='';
+  let dot=0,mi=0;const msgs=['Checking UPC databases','Querying open sources','Web fallbacks','Ranking'];
+  const t=setInterval(()=>{dot=(dot+1)%4;setStatus('stResults',msgs[mi]+'.'.repeat(dot+1));if(dot===3)mi=Math.min(mi+1,msgs.length-1);},600);
+  try{const d=await doLookup(q);clearInterval(t);S.results=d.results||[];renderResults(d);}
+  catch(e){clearInterval(t);S.results=[];renderNoResults({message:e.message,checked:[]});
+    setStatus('stResults',e.message?.includes('404')||e.message?.includes('fetch')?'404 – deploy via GitHub+Netlify, not drag-drop':e.message||'Lookup failed','err');}
+}
+
+function renderResults(d){
+  const list=$('resultsList'),ck=(d.checked||[]).join(', ')||'hybrid';
+  if(!S.results.length){renderNoResults({message:d.message,checked:d.checked||[]});setStatus('stResults',`No matches. Checked: ${ck}`,'warn');$('resultsSubtitle').textContent=`Checked: ${ck}`;return;}
+  $('resultsSubtitle').textContent=`${S.results.length} match${S.results.length!==1?'es':''} · ${ck}`;setStatus('stResults','');
+  list.innerHTML='';
+  S.results.forEach((r,i)=>{
+    const c=document.createElement('div');c.className='result-card';
+    const th=r.thumbnail?`<img class="result-thumb" src="${esc(r.thumbnail)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`:'';
+    const ep=`<div class="result-thumb-empty" ${r.thumbnail?'style="display:none"':''}>📦</div>`;
+    c.innerHTML=`<div>${th}${ep}</div><div class="result-info"><div class="src-badge">${esc((r.source||'').toUpperCase().replace(/-/g,' '))} ${Math.round((r.confidence||0)*100)}%</div><h3>${esc(r.title||'Untitled')}</h3>${r.description?`<div class="desc">${esc(r.description)}</div>`:''}<div class="chips">${(r.chips||[]).slice(0,5).map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div><div class="btn-row" style="margin-top:8px"><button class="btn sm primary ubtn" data-i="${i}">Use This Match</button></div></div>`;
+    list.appendChild(c);
+  });
+  list.querySelectorAll('.ubtn').forEach(b=>b.addEventListener('click',()=>selectResult(S.results[+b.dataset.i])));
+}
+
+function renderNoResults({message,checked}){
+  $('resultsList').innerHTML=`<div class="no-result-card">
+    <div class="icon">🔍</div><h3>No matches found</h3>
+    <p>${esc(message||'Not found in any database.')}</p>
+    <p style="font-size:.76rem;margin-bottom:14px">Checked: ${esc((checked||[]).join(', ')||'hybrid')}</p>
+    <div class="btn-grid">
+      <button class="btn primary" id="btnCustom">Continue as Custom</button>
+      <button class="btn ghost" id="btnEbay">🛒 Search eBay</button>
+      <button class="btn ghost" id="btnGoogle">🔎 Search Google</button>
+    </div>
+    <div class="url-paste-box">
+      <div class="lbl">🔗 Found it online? Paste the product URL here</div>
+      <div style="font-size:.76rem;color:var(--muted);margin-bottom:2px">Works with Amazon, Walmart, Home Depot, eBay listings, brand sites, and most product pages.</div>
+      <div class="url-paste-row">
+        <input class="field" id="scrapeUrlInput" placeholder="https://www.amazon.com/dp/..." style="flex:1"/>
+        <button class="btn primary" id="btnScrapeUrl">Fetch Info</button>
+      </div>
+      <div id="scrapeResultArea"></div>
+      <div class="status" id="stScrape" style="margin-top:8px"></div>
+    </div>
+  </div>`;
+  $('btnCustom').onclick=()=>selectResult({title:S.lookupQuery,price:'',description:'',source:'custom',thumbnail:'',chips:[]});
+  $('btnEbay').onclick=()=>window.open(`https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(S.lookupQuery)}`,'_blank');
+  $('btnGoogle').onclick=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(S.lookupQuery)}`,'_blank');
+  $('btnScrapeUrl').addEventListener('click',()=>runScrape($('scrapeUrlInput').value,'scrapeResultArea','stScrape',null));
+  $('scrapeUrlInput').addEventListener('keydown',e=>{ if(e.key==='Enter') runScrape($('scrapeUrlInput').value,'scrapeResultArea','stScrape',null); });
+}
+
+async function runScrape(rawUrl, resultAreaId, stId, onSelect){
+  const url=(rawUrl||'').trim();
+  if(!url) return setStatus(stId,'Paste a URL first','warn');
+  setStatus(stId,'Fetching product info…');
+  const area=$(resultAreaId); if(area) area.innerHTML='';
+  try {
+    const res=await fetch('/.netlify/functions/scrape',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const data=await res.json();
+    if(!res.ok||data.error) throw new Error(data.error||`Scrape failed (${res.status})`);
+    const p=data.product;
+    if(!p||!p.title) throw new Error('Could not extract product info from that page. Try a different URL or continue as custom.');
+    setStatus(stId,'');
+    if(area) renderScrapeResult(area, p, url, onSelect);
+  } catch(e){
+    setStatus(stId, e.message||'Fetch failed','err');
+  }
+}
+
+function renderScrapeResult(area, p, url, onSelect){
+  const div=document.createElement('div'); div.className='scrape-card';
+  const th=p.thumbnail?`<img src="${esc(p.thumbnail)}" style="width:80px;height:80px;object-fit:cover;border-radius:10px;float:right;margin:0 0 8px 12px" onerror="this.remove()" alt=""/>`:'';
+  const domain=(() => { try{return new URL(url).hostname.replace('www.','');}catch(_){return url;} })();
+  div.innerHTML=`${th}
+    <div class="src-badge">${esc(domain)}</div>
+    <h4>${esc(p.title)}</h4>
+    <div class="sm">${p.price?`$${esc(p.price)} · `:''}${p.brand?`${esc(p.brand)} · `:''}${esc(p.description?.slice(0,120)||'')}</div>
+    <div class="chips" style="margin-bottom:10px">${(p.chips||[]).slice(0,4).map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>
+    <a class="saved-link" href="${esc(url)}" target="_blank" rel="noopener">🔗 ${esc(domain)}</a>
+    <div class="btn-row" style="margin-top:10px">
+      <button class="btn sm primary" id="btnUseScrape">✓ Use This Product</button>
+      <button class="btn sm ghost" id="btnSaveLinkOnly">🔖 Save Link Only</button>
+    </div>`;
+  area.appendChild(div);
+  $('btnUseScrape').addEventListener('click',()=>{
+    const result={title:p.title||'',price:applyDisc(p.price||''),description:p.description||'',
+      source:domain,brand:p.brand||'',model:p.model||'',upc:p.upc||'',
+      thumbnail:p.thumbnail||'',chips:p.chips||[],sourceUrl:url};
+    if(onSelect) onSelect(result);
+    else selectResult(result);
+  });
+  $('btnSaveLinkOnly').addEventListener('click',()=>{
+    // Save just the URL reference without full product data
+    const result={title:S.lookupQuery||'',price:'',description:'',source:'custom',
+      brand:'',model:'',upc:'',thumbnail:'',chips:[`Ref: ${domain}`],sourceUrl:url};
+    if(onSelect) onSelect(result);
+    else selectResult(result);
+  });
+}
+function selectResult(r){
+  S.selected={title:r.title||S.lookupQuery||'',price:applyDisc(r.price||''),condition:'Used – Good',
+    description:r.description||'',source:r.source||'lookup',brand:r.brand||'',model:r.model||'',
+    upc:r.upc||(isUPC(S.lookupQuery)?S.lookupQuery:''),thumbnail:r.thumbnail||'',
+    chips:r.chips||[],sourceUrl:r.sourceUrl||''};
+  setStep(3);
+}
+
+async function startCam(){await stopCam();try{S.camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:S.camFacing},audio:false});$('camVideo').srcObject=S.camStream;setStatus('stPhotos','Camera ready','ok');}catch(e){setStatus('stPhotos','Camera unavailable — add photos from file','warn');}}
+async function stopCam(){if(S.camStream){S.camStream.getTracks().forEach(t=>t.stop());S.camStream=null;}$('camVideo').srcObject=null;}
+
+function capPhoto(){const v=$('camVideo');if(!v.videoWidth)return setStatus('stPhotos','Camera not ready','warn');if(S.photos.length>=10)return setStatus('stPhotos','Max 10','warn');const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);S.photos.push(c.toDataURL('image/jpeg',.9));renderPhotos();setStatus('stPhotos',`Photo ${S.photos.length} captured`,'ok');}
+async function burstCap(){for(let i=0;i<3&&S.photos.length<10;i++){capPhoto();await sleep(350);}}
+
+function renderPhotos(gid='photosGrid',arr=S.photos,fid='inputPhotoFile'){
+  const g=$(gid);g.innerHTML='';
+  arr.forEach((src,i)=>{
+    const t=document.createElement('div');t.className='photo-tile';t.draggable=true;t.dataset.i=i;
+    t.innerHTML=`<img src="${src}" alt=""/><button class="del-btn">×</button><span class="idx-label">${i+1}</span>`;
+    t.querySelector('.del-btn').addEventListener('click',e=>{e.stopPropagation();arr.splice(i,1);renderPhotos(gid,arr,fid);});
+    t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',String(i)));
+    t.addEventListener('dragover',e=>e.preventDefault());
+    t.addEventListener('drop',e=>{e.preventDefault();const from=+e.dataTransfer.getData('text/plain');if(from===i)return;const[m]=arr.splice(from,1);arr.splice(i,0,m);renderPhotos(gid,arr,fid);});
+    g.appendChild(t);
+  });
+  if(arr.length<10){const a=document.createElement('div');a.className='photo-add-tile';a.innerHTML='<span>＋</span><span>Add</span>';a.addEventListener('click',()=>$(fid).click());g.appendChild(a);}
+}
+
+function hydrateDetails(){const s=S.selected||{};$('fTitle').value=s.title||'';$('fPrice').value=s.price||'';$('fCondition').value=s.condition||'Used – Good';$('fSource').value=s.source||'';$('fDescription').value=s.description||'';}
+function syncDetails(){if(!S.selected)S.selected={};S.selected.title=$('fTitle').value.trim();S.selected.price=$('fPrice').value.trim();S.selected.condition=$('fCondition').value;S.selected.source=$('fSource').value.trim();S.selected.description=$('fDescription').value.trim();}
+function renderReview(){const s=S.selected||{};const rows=[['Title',s.title||'—'],['Price',s.price?`$${s.price}`:'—'],['Condition',s.condition||'—'],['Source',s.source||'—'],['UPC',s.upc||'—'],['Photos',String(S.photos.length)]];let h=rows.map(([l,v])=>`<div class="review-row"><span class="lbl">${esc(l)}</span><span class="val">${esc(v)}</span></div>`).join('');if(s.sourceUrl)h+=`<div class="review-row"><span class="lbl">Ref URL</span><span class="val"><a href="${esc(s.sourceUrl)}" target="_blank" rel="noopener" style="color:var(--accent2);word-break:break-all;font-size:.8rem">${esc((() => { try{return new URL(s.sourceUrl).hostname.replace('www.','');}catch(_){return s.sourceUrl;} })())}</a></span></div>`;if(S.photos.length)h+=`<div class="review-photos">${S.photos.slice(0,8).map(p=>`<img src="${p}" alt=""/>`).join('')}</div>`;if(s.description)h+=`<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;font-size:.84rem;color:var(--muted)">${esc(s.description)}</div>`;$('reviewContent').innerHTML=h;}
+function saveDraft(){syncDetails();S.draft={selected:S.selected,photos:S.photos,lookupQuery:S.lookupQuery,savedAt:new Date().toISOString()};persist();setStatus('stSave','Draft saved','ok');}
+function loadDraft(){if(!S.draft)return setStatus('stSettings','No draft found','warn');S.selected=S.draft.selected||null;S.photos=S.draft.photos||[];S.lookupQuery=S.draft.lookupQuery||'';hydrateDetails();renderPhotos();setStep(S.selected?4:1);setStatus('stSettings','Draft restored','ok');}
+function resetFlow(){S.step=1;S.lookupQuery='';S.results=[];S.selected=null;S.photos=[];$('lookupText').value='';$('resultsList').innerHTML='';$('photosGrid').innerHTML='';setStep(1);setStatus('stIdentify','');}
+
+async function uploadPhoto(dataUrl,idx){const{url,key,bucket,folder}=S.settings;const res=await fetch(dataUrl);const blob=await res.blob();const ext=blob.type.includes('png')?'png':'jpg';const path=`${folder}/${Date.now()}_${idx}.${ext}`;const base=url.replace(/\/$/,'');const up=await fetch(`${base}/storage/v1/object/${bucket}/${path}`,{method:'POST',headers:{apikey:key,Authorization:`Bearer ${key}`,'Content-Type':blob.type,'x-upsert':'true'},body:blob});if(!up.ok)throw new Error('Photo upload failed: '+(await up.text()));return{path,url:`${base}/storage/v1/object/public/${bucket}/${path}`};}
+
+async function saveItemSupa(data,photos,stId){
+  readSettings();const{url,key,table}=S.settings;
+  if(!url||!key)throw new Error('Supabase URL and key required');
+  const up=[];for(let i=0;i<photos.length;i++){setStatus(stId,`Uploading photo ${i+1}/${photos.length}…`);up.push(await uploadPhoto(photos[i],i));}
+  setStatus(stId,'Saving…');
+  const payload={title:data.title||'Untitled',price:parseFloat(data.price||0)||0,condition:data.condition||'Used – Good',description:data.description||'',source:data.source||'',upc:data.upc||'',product_brand:data.brand||'',product_model:data.model||'',source_url:data.sourceUrl||'',photos:up.map(p=>p.url),photo_paths:up.map(p=>p.path),status:'ready_to_post',created_at_client:new Date().toISOString()};
+  const base=url.replace(/\/$/,'');const r=await fetch(`${base}/rest/v1/${encodeURIComponent(table)}`,{method:'POST',headers:{'Content-Type':'application/json',apikey:key,Authorization:`Bearer ${key}`,Prefer:'return=representation'},body:JSON.stringify(payload)});
+  if(!r.ok)throw new Error((await r.text())||`Save failed (${r.status})`);return payload;
+}
+
+async function saveToSupabase(){readSettings();if(!S.settings.url||!S.settings.key)return setStatus('stSave','Supabase URL and key required','err');syncDetails();try{setStatus('stSave','Saving…');const p=await saveItemSupa(S.selected,S.photos,'stSave');S.drafts=[{...p,savedAt:new Date().toISOString()},...S.drafts].slice(0,50);S.draft=null;persist();setStatus('stSave','✓ Saved!','ok');setTimeout(()=>{resetFlow();showPage('dash');},1500);}catch(e){setStatus('stSave',e.message||'Save failed','err');}}
+
+// FB LAUNCH
+function buildFBPayload(sel,photos){return{title:sel?.title||'',price:sel?.price||'',condition:sel?.condition||'Used – Good',description:sel?.description||'',upc:sel?.upc||'',brand:sel?.brand||'',photos:(photos||[]).slice(0,6),timestamp:Date.now()};}
+
+function launchToFB(sel,photos,stId){
+  const payload=buildFBPayload(sel,photos);
+  try{localStorage.setItem('crazymoe_fb_pending',JSON.stringify(payload));}catch(e){}
+  copyText(buildListingText(sel),null,false);
+  window.open('https://www.facebook.com/marketplace/create/item','_blank');
+  if(stId)setStatus(stId,'✓ FB Marketplace opened. Extension auto-fills. Clipboard has backup text.','ok');
+}
+
+function buildListingText(s){return`${s?.title||''}\nPrice: $${s?.price||'0'}\nCondition: ${s?.condition||'Used – Good'}\n${s?.description||''}\n${s?.upc?`UPC: ${s.upc}`:''}`.trim();}
+
+function copyText(text,stId,notify=true){navigator.clipboard?.writeText(text).catch(()=>{});if(notify&&stId)setStatus(stId,'✓ Copied to clipboard','ok');}
+
+// DASHBOARD
+function renderDashboard(){const l=$('dashList');if(!S.drafts.length){l.innerHTML='<p style="color:var(--muted);font-size:.88rem">No saved items yet.</p>';return;}l.innerHTML=S.drafts.map(d=>{const p=d.photos?.[0]||'';const dt=d.savedAt?new Date(d.savedAt).toLocaleDateString():'';return`<div class="dash-item">${p?`<img class="dash-thumb" src="${esc(p)}" alt=""/>`:`<div class="dash-thumb">📦</div>`}<div class="dash-info"><h4>${esc(d.title||'Untitled')}</h4><div class="meta">${d.price?`$${d.price} · `:''}${esc(d.condition||'')}${dt?` · ${dt}`:''}</div></div></div>`;}).join('');}
+
+// ████████ BULK ████████
+function parseBulkInput(raw){return raw.split(/[\n,;|\t]+/).map(s=>s.trim()).filter(s=>s.length>=3).slice(0,50);}
+function makeBulkItem(q,i,extra={}){return{id:`b${Date.now()}_${i}`,query:q,status:extra.status||'queued',results:[],selected:null,photos:[],details:{title:'',price:'',condition:'Used – Good',source:'',description:''},error:null,processedAt:null,postedAt:null,labelThumb:extra.labelThumb||'',identifierImage:extra.identifierImage||'',kind:extra.kind||'text'};}
+
+
+async function processBulkIdentifierFiles(fileList){
+  const files=[...fileList||[]];
+  if(!files.length) return setStatus('stBulkImport','Choose one or more identifier photos first','warn');
+  $('bulkImportCard').classList.remove('hidden');
+  setStatus('stBulkImport',`Scanning 0/${files.length} images…`);
+  const created=[];
+  for(let i=0;i<files.length;i++){
+    const f=files[i];
+    setStatus('stBulkImport',`Scanning ${i+1}/${files.length}: ${f.name||'image'}`);
+    const code=await scanFileForBarcode(f);
+    const thumb=URL.createObjectURL(f);
+    if(code){
+      created.push(makeBulkItem(code, i, {status:'queued', labelThumb:thumb, identifierImage:thumb, kind:'barcode-photo'}));
+    }else{
+      created.push(makeBulkItem('', i, {status:'manual', labelThumb:thumb, identifierImage:thumb, kind:'sticker-photo'}));
+    }
+  }
+  if(!B.queue.length) B.queue=[];
+  B.queue=[...created, ...B.queue];
+  B.sel.clear();
+  persistB();
+  $('bulkStatsRow').classList.remove('hidden'); $('bulkActionsBar').classList.remove('hidden');
+  renderBulkList(); updateStats(); updateFloat();
+  const found=created.filter(x=>x.status==='queued').length, manual=created.filter(x=>x.status==='manual').length;
+  setStatus('stBulkImport',`Added ${created.length} item${created.length!==1?'s':''} · ${found} barcode${found!==1?'s':''} found · ${manual} manual`, 'ok');
+}
+function renderLabelPreview(item){
+  const box=$('beLabelPreview'); if(!box) return;
+  const src=item.labelThumb||item.identifierImage||'';
+  if(!src){ box.innerHTML=''; return; }
+  box.innerHTML=`<div class="scrape-card" style="display:flex;gap:12px;align-items:center;margin-bottom:10px"><img src="${esc(src)}" alt="" style="width:86px;height:86px;object-fit:cover;border-radius:12px;border:1px solid var(--border)"><div><div class="src-badge">IDENTIFIER PHOTO</div><div style="font-weight:700;margin-top:6px">${esc(item.query||'Manual entry needed')}</div><div class="sm">Use this label/sticker image as your reference while you complete intake.</div></div></div>`;
+}
+function runBulkManualLookup(){
+  const item=getItem(); if(!item) return;
+  const val=($('beManualInput')?.value||'').trim();
+  if(!val) return setStatus('stBeMatch','Type a UPC or model first','warn');
+  item.query=val; item.status='processing'; persistB(); renderBeItem();
+  doLookup(val).then(d=>{ item.results=d.results||[]; item.status=item.results.length?'found':'no-match'; item.error=item.results.length?null:(d.message||'No matches found'); persistB(); renderBeItem(); setStatus('stBeMatch', item.results.length?`Found ${item.results.length} match${item.results.length!==1?'es':''}`:'No matches found','ok');}).catch(e=>{ item.status='no-match'; item.error=e.message; persistB(); renderBeItem(); setStatus('stBeMatch',e.message||'Lookup failed','err'); });
+}
+function initBulkQueue(){
+  const qs=parseBulkInput($('bulkInput').value);
+  if(!qs.length)return setStatus('stBulkImport','No valid identifiers found','warn');
+  B.queue=qs.map((q,i)=>makeBulkItem(q,i));B.sel.clear();persistB();startBulkProcessing();
+}
+
+async function startBulkProcessing(){
+  if(B.processing)return;
+  B.processing=true;B.pause=false;
+  $('bulkProgressCard').classList.remove('hidden');$('bulkStatsRow').classList.remove('hidden');
+  $('bulkActionsBar').classList.remove('hidden');$('bulkImportCard').classList.add('hidden');
+  $('btnBulkResume').classList.add('hidden');
+  let errs=0;
+  for(let i=0;i<B.queue.length;i++){
+    if(B.pause){B.processing=false;setStatus('stBulkProg','Paused','warn');renderBulkList();return;}
+    const item=B.queue[i];if(item.status!=='queued')continue;
+    item.status='processing';renderBulkList();updateStats();setStatus('stBulkProg',`Looking up: ${item.query}`);updateProgress();
+    try{
+      const d=await doLookup(item.query);item.results=d.results||[];
+      item.status=item.results.length?'found':'no-match';
+      if(item.results.length){const b=item.results[0];item.selected={title:b.title||item.query,price:applyDisc(b.price||''),condition:'Used – Good',description:b.description||'',source:b.source||'lookup',brand:b.brand||'',model:b.model||'',upc:b.upc||(isUPC(item.query)?item.query:''),thumbnail:b.thumbnail||'',chips:b.chips||[]};item.details={...item.selected};}
+      errs=0;
+    }catch(e){item.status='no-match';item.error=e.message;errs++;if(errs>=5){B.processing=false;setStatus('stBulkProg','Auto-paused: 5 consecutive errors','err');renderBulkList();updateStats();persistB();return;}}
+    item.processedAt=new Date().toISOString();renderBulkList();updateStats();persistB();updateProgress();
+    await sleep(800);
+  }
+  B.processing=false;
+  const f=B.queue.filter(x=>x.status==='found'||x.status==='ready').length;
+  const n=B.queue.filter(x=>x.status==='no-match').length;
+  setStatus('stBulkProg',`Done! ${f} found, ${n} no match`,'ok');updateProgress();
+}
+
+function pauseBulkProcessing(){
+  if(!B.processing&&!B.pause)return;
+  if(B.pause){B.pause=false;B.queue.filter(x=>x.status==='processing').forEach(x=>x.status='queued');$('btnBulkPause').textContent='⏸ Pause';startBulkProcessing();}
+  else{B.pause=true;$('btnBulkPause').textContent='▶ Resume';setStatus('stBulkProg','Pausing…','warn');}
+}
+
+function cancelBulkProcessing(){B.pause=true;B.processing=false;B.queue.filter(x=>x.status==='processing').forEach(x=>x.status='queued');$('bulkProgressCard').classList.add('hidden');$('bulkImportCard').classList.remove('hidden');setStatus('stBulkImport','Cancelled','warn');}
+
+function updateProgress(){const tot=B.queue.length,done=B.queue.filter(x=>x.status!=='queued'&&x.status!=='processing').length,pct=tot?Math.round(done/tot*100):0;$('bulkFill').style.width=pct+'%';$('bulkProgLabel').textContent=`${done} / ${tot}`;$('bulkProgPct').textContent=pct+'%';}
+
+function updateStats(){
+  const q=B.queue;
+  $('spAll').textContent=`All ${q.length}`;
+  $('spFound').textContent=`Found ${q.filter(x=>x.status==='found').length}`;
+  $('spNoMatch').textContent=`No Match ${q.filter(x=>x.status==='no-match').length}`;
+  $('spReady').textContent=`Ready ${q.filter(x=>x.status==='ready').length}`;
+  $('spPosted').textContent=`Posted ${q.filter(x=>x.status==='posted').length}`;
+  updateFloat();
+}
+
+function setFilter(f){B.filter=f;document.querySelectorAll('.stat-pill').forEach(p=>p.classList.toggle('active',p.dataset.bf===f));renderBulkList();}
+function filtered(){return B.filter==='all'?B.queue:B.queue.filter(x=>x.status===B.filter);}
+
+function statusLabel(s){return{queued:'⏳ Queued',processing:'🔄 Looking up',found:'⚡ Found',
+  'manual':'📝 Manual needed','no-match':'❌ No match',ready:'✅ Ready',posted:'📘 Posted'}[s]||s;}
+
+function renderBulkList(){
+  const list=$('bulkList'),items=filtered();
+  if(!items.length){list.innerHTML=`<div style="text-align:center;padding:28px;color:var(--muted)">${B.queue.length?'No items match this filter':'Paste UPCs above to get started'}</div>`;return;}
+  list.innerHTML='';
+  items.forEach(item=>{
+    const div=document.createElement('div');div.className='bulk-item'+(B.sel.has(item.id)?' sel-item':'');div.dataset.id=item.id;
+    const th=item.selected?.thumbnail?`<img class="bi-thumb" src="${esc(item.selected.thumbnail)}" alt="" onerror="this.outerHTML='<div class=\\'bi-thumb\\'>📦</div>'">`:`<div class="bi-thumb">📦</div>`;
+    const title=item.selected?.title||item.query;
+    const meta=item.status==='found'?`${item.results.length} match${item.results.length!==1?'es':''}`:item.status==='no-match'?(item.error||'Not found'):item.query;
+    const canEdit=item.status==='found'||item.status==='no-match'||item.status==='ready';
+    div.innerHTML=`<div class="bi-check${B.sel.has(item.id)?' on':''}" data-chk="${item.id}"></div>${th}
+      <div class="bi-info"><div class="bi-title">${esc(title)}</div>
+        <div class="bi-meta">${esc(meta)}${item.photos.length?` · ${item.photos.length} photo${item.photos.length!==1?'s':''}`:''}</div>
+        <div style="margin-top:3px"><span class="sbadge ${item.status}">${statusLabel(item.status)}</span></div>
+      </div>
+      <div class="bi-actions">${canEdit?`<button class="btn xs ghost editbtn" data-id="${item.id}">Edit</button>`:''}${item.status==='ready'?`<button class="btn xs fb fbbtn" data-id="${item.id}">FB</button>`:''}</div>`;
+    list.appendChild(div);
+  });
+  list.querySelectorAll('[data-chk]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();const id=el.dataset.chk;if(B.sel.has(id))B.sel.delete(id);else B.sel.add(id);updateFloat();renderBulkList();}));
+  list.querySelectorAll('.editbtn').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();openBulkEditor(b.dataset.id);}));
+  list.querySelectorAll('.fbbtn').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const item=B.queue.find(x=>x.id===b.dataset.id);if(item){launchToFB(item.selected,item.photos,null);item.status='posted';item.postedAt=new Date().toISOString();persistB();renderBulkList();updateStats();}}));
+  list.querySelectorAll('.bulk-item').forEach(row=>row.addEventListener('click',e=>{if(e.target.closest('[data-chk]')||e.target.closest('button'))return;const item=B.queue.find(x=>x.id===row.dataset.id);if(item&&(item.status==='found'||item.status==='no-match'||item.status==='ready'||item.status==='manual'))openBulkEditor(row.dataset.id);}));
+}
+
+function updateFloat(){const n=B.sel.size;$('bulkFloat').classList.toggle('on',n>0);$('bulkFloatCnt').textContent=`${n} selected`;}
+
+function selAll(){filtered().forEach(x=>B.sel.add(x.id));renderBulkList();updateFloat();}
+function selNone(){B.sel.clear();renderBulkList();updateFloat();}
+
+function launchSelected(){
+  const items=filtered().filter(x=>B.sel.has(x.id)&&(x.status==='found'||x.status==='ready'));
+  if(!items.length)return setStatus('stBulkImport','Select Found or Ready items first','warn');
+  B.fbQ=items.map(x=>x.id);B.fbQIdx=0;launchNextFB();
+}
+
+function launchNextFB(){
+  if(B.fbQIdx>=B.fbQ.length)return;
+  const item=B.queue.find(x=>x.id===B.fbQ[B.fbQIdx]);
+  if(!item){B.fbQIdx++;launchNextFB();return;}
+  launchToFB(item.selected,item.photos,null);
+  item.status='posted';item.postedAt=new Date().toISOString();B.fbQIdx++;
+  persistB();renderBulkList();updateStats();
+  const rem=B.fbQ.length-B.fbQIdx;
+  if(rem>0)setStatus('stBulkImport',`Launched! ${rem} more. Tap "Launch Selected" again for next.`,'ok');
+}
+
+async function bulkSaveReady(){
+  readSettings();if(!S.settings.url||!S.settings.key)return setStatus('stBulkImport','Supabase settings required','err');
+  const ready=B.queue.filter(x=>x.status==='ready');
+  if(!ready.length)return setStatus('stBulkImport','No Ready items to save','warn');
+  setStatus('stBulkImport',`Saving ${ready.length} items…`);let saved=0;
+  for(const item of ready){try{const p=await saveItemSupa(item.selected||item.details,item.photos,'stBulkImport');S.drafts=[{...p,savedAt:new Date().toISOString()},...S.drafts].slice(0,60);item.status='posted';item.postedAt=new Date().toISOString();saved++;}catch(e){setStatus('stBulkImport',`Error: ${e.message}`,'err');break;}}
+  persist();persistB();renderBulkList();updateStats();setStatus('stBulkImport',`✓ ${saved} item${saved!==1?'s':''} saved`,'ok');
+}
+
+// BULK EDITOR
+function openBulkEditor(id){B.editId=id;showPage('bulkEditor');setBeTab('match');renderBeItem();}
+function getItem(){return B.queue.find(x=>x.id===B.editId)||null;}
+
+function renderBeItem(){
+  const item=getItem();if(!item)return;
+  renderLabelPreview(item);
+  const idx=B.queue.indexOf(item);
+  $('beTitleTxt').textContent=`${idx+1}/${B.queue.length}: ${item.query}`;
+  $('btnBePrev').disabled=idx===0;$('btnBeNext').disabled=idx===B.queue.length-1;
+  // Match tab
+  const ml=$('beMatchList');ml.innerHTML='';
+  $('beMatchSub').textContent=item.status==='manual'?'No barcode detected — type the model or UPC from the sticker photo below.':(item.results.length?`${item.results.length} matches — tap to select`:'No matches. Continue as custom.');
+  if(item.results.length){
+    item.results.forEach((r,ri)=>{
+      const c=document.createElement('div');
+      c.className='result-card'+(item.selected?.title===r.title?' selected-match':'');
+      const th=r.thumbnail?`<img class="result-thumb" src="${esc(r.thumbnail)}" alt="" loading="lazy">`:'';
+      const ep=`<div class="result-thumb-empty" ${r.thumbnail?'style="display:none"':''}>📦</div>`;
+      c.innerHTML=`<div>${th}${ep}</div><div class="result-info"><div class="src-badge">${esc((r.source||'').toUpperCase().replace(/-/g,' '))} ${Math.round((r.confidence||0)*100)}%</div><h3>${esc(r.title||'Untitled')}</h3>${r.description?`<div class="desc">${esc(r.description)}</div>`:''}<div class="chips">${(r.chips||[]).slice(0,4).map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div><div class="btn-row" style="margin-top:7px"><button class="btn xs primary selbtn" data-ri="${ri}">${item.selected?.title===r.title?'✓ Selected':'Use This'}</button></div></div>`;
+      ml.appendChild(c);
+    });
+    ml.querySelectorAll('.selbtn').forEach(b=>b.addEventListener('click',()=>{
+      const r=item.results[+b.dataset.ri];
+      item.selected={title:r.title||item.query,price:applyDisc(r.price||''),condition:'Used – Good',description:r.description||'',source:r.source||'lookup',brand:r.brand||'',model:r.model||'',upc:r.upc||(isUPC(item.query)?item.query:''),thumbnail:r.thumbnail||'',chips:r.chips||[],sourceUrl:r.sourceUrl||''};
+      item.details={...item.selected};if(item.status==='no-match'||item.status==='found')item.status='ready';
+      persistB();renderBeItem();setStatus('stBeMatch',`✓ "${r.title||'Item'}" selected`,'ok');
+    }));
+  } else {
+    const nm=document.createElement('div');nm.className='no-result-card';
+    const head=item.status==='manual' ? 'Manual entry needed' : `No matches for "${esc(item.query)}"`;
+    const sub=item.status==='manual' ? 'We could not read a barcode from the uploaded identifier photo. Type a UPC or model number, then run lookup, or continue as custom.' : 'Search Google, paste the URL back here to pull product info, or continue as custom.';
+    nm.innerHTML=`<div class="icon">🔍</div><h3>${head}</h3>
+      <p>${sub}</p>
+      ${item.status==='manual'?`<div class="url-paste-box" style="margin-bottom:12px"><div class="lbl">⌨️ Enter UPC / model from sticker</div><div class="url-paste-row"><input class="field" id="beManualInput" placeholder="Type UPC or model number" value="${esc(item.query||'')}" style="flex:1"/><button class="btn primary" id="btnBeManualLookup">Lookup</button></div></div>`:''}
+      <div class="btn-grid" style="margin-bottom:0">
+        <button class="btn ghost" id="beGoog">🔎 Search Google</button>
+        <button class="btn ghost" id="beEbay">🛒 Search eBay</button>
+      </div>
+      <div class="url-paste-box" style="margin-top:12px">
+        <div class="lbl">🔗 Paste product URL to pull info</div>
+        <div class="url-paste-row">
+          <input class="field" id="beScrapeUrl" placeholder="https://..." style="flex:1"/>
+          <button class="btn primary" id="btnBeScrape">Fetch</button>
+        </div>
+        <div id="beScrapeArea"></div>
+        <div class="status" id="stBeScrape" style="margin-top:7px"></div>
+      </div>
+      <div style="margin-top:12px"><button class="btn primary" id="beCustomBtn">Continue as Custom Item</button></div>`;
+    ml.appendChild(nm);
+    if($('btnBeManualLookup')) $('btnBeManualLookup').addEventListener('click',runBulkManualLookup);
+    if($('beManualInput')) $('beManualInput').addEventListener('keydown',e=>{ if(e.key==='Enter') runBulkManualLookup(); });
+    $('beGoog').addEventListener('click',()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(item.query||$('beManualInput')?.value||'')}`,'_blank'));
+    $('beEbay').addEventListener('click',()=>window.open(`https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(item.query||$('beManualInput')?.value||'')}`,'_blank'));
+    $('btnBeScrape').addEventListener('click',()=>runScrape($('beScrapeUrl').value,'beScrapeArea','stBeScrape',(result)=>{
+      item.selected={...result,upc:result.upc||(isUPC(item.query)?item.query:'')};
+      item.details={...item.selected};item.status='ready';
+      persistB();renderBeItem();setStatus('stBeMatch',`✓ Product info loaded from ${result.source}`,'ok');
+    }));
+    $('beScrapeUrl').addEventListener('keydown',e=>{ if(e.key==='Enter') $('btnBeScrape').click(); });
+    $('beCustomBtn').addEventListener('click',()=>{const manualVal=($('beManualInput')?.value||item.query||'').trim(); item.query=manualVal; item.selected={title:manualVal||item.query||'Custom Item',price:'',condition:'Used – Good',description:'',source:'custom',brand:'',model:'',upc:isUPC(manualVal)?manualVal:'',thumbnail:'',chips:manualVal?[`ID: ${manualVal}`]:[],sourceUrl:''};item.details={...item.selected}; item.status='ready'; setBeTab('details');renderBeDetails();persistB();});
+  }
+  renderPhotos('bePhotosGrid',item.photos,'inputBePhoto');
+  renderBeDetails();
+  // Update launch tab ref link
+  const launchRef=$('beLaunchRefLink');
+  if(launchRef){const url=item.selected?.sourceUrl||'';if(url){const dom=(() => {try{return new URL(url).hostname.replace('www.','');}catch(_){return url;}})();launchRef.innerHTML=`<a class="saved-link" href="${esc(url)}" target="_blank" rel="noopener">🔗 Reference: ${esc(dom)}</a>`;}else{launchRef.innerHTML='';}}
+}
+
+function renderBeDetails(){const item=getItem();if(!item)return;const d=item.selected||item.details||{};$('beTitle').value=d.title||'';$('bePrice').value=d.price||'';$('beCondition').value=d.condition||'Used – Good';$('beSource').value=d.source||'';$('beDescription').value=d.description||'';
+  // Show saved URL if present
+  const linkArea=$('beSavedLink');
+  if(linkArea){if(d.sourceUrl){const dom=(() => {try{return new URL(d.sourceUrl).hostname.replace('www.','');}catch(_){return d.sourceUrl;}})();linkArea.innerHTML=`<a class="saved-link" href="${esc(d.sourceUrl)}" target="_blank" rel="noopener">🔗 ${esc(dom)}</a>`;}else{linkArea.innerHTML='';}}
+}
+
+function saveBeDetails(){const item=getItem();if(!item)return;if(!item.selected)item.selected={};item.selected.title=$('beTitle').value.trim();item.selected.price=$('bePrice').value.trim();item.selected.condition=$('beCondition').value;item.selected.source=$('beSource').value.trim();item.selected.description=$('beDescription').value.trim();item.details={...item.selected};if(item.status==='found'||item.status==='no-match')item.status='ready';persistB();updateStats();setStatus('stBeDetails','Saved ✓','ok');renderBeDetails();}
+
+function setBeTab(tab){document.querySelectorAll('.be-tab').forEach(b=>b.classList.toggle('on',b.dataset.bt===tab));document.querySelectorAll('.be-panel').forEach(p=>p.classList.toggle('on',p.id===`bePanel-${tab}`));if(tab==='photos'){renderPhotos('bePhotosGrid',getItem()?.photos||[],'inputBePhoto');startBeCam();}else stopBeCam();}
+
+async function startBeCam(){await stopBeCam();try{B.beCam=await navigator.mediaDevices.getUserMedia({video:{facingMode:B.beFacing},audio:false});$('beCamVid').srcObject=B.beCam;}catch(e){}}
+async function stopBeCam(){if(B.beCam){B.beCam.getTracks().forEach(t=>t.stop());B.beCam=null;}$('beCamVid').srcObject=null;}
+
+function beCapture(){const item=getItem();if(!item)return;const v=$('beCamVid');if(!v.videoWidth)return setStatus('stBePhotos','Camera not ready','warn');if(item.photos.length>=10)return setStatus('stBePhotos','Max 10','warn');const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);item.photos.push(c.toDataURL('image/jpeg',.9));renderPhotos('bePhotosGrid',item.photos,'inputBePhoto');if(item.selected&&item.status==='found')item.status='ready';setStatus('stBePhotos',`Photo ${item.photos.length}`,'ok');}
+async function beBurst(){for(let i=0;i<3;i++){beCapture();await sleep(350);}}
+
+// PWA
+let iEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();iEvt=e;$('installBar').classList.remove('hidden');});
+window.addEventListener('appinstalled',()=>{$('installBar').classList.add('hidden');iEvt=null;});
+
+// ═══ INIT ═══
+window.addEventListener('DOMContentLoaded',()=>{
+  hydrate();applySettingsUI();initAccordion();setStep(1);renderPhotos();showPage('scanner');
+
+  $('installBtn').addEventListener('click',async()=>{if(!iEvt)return;iEvt.prompt();const{outcome}=await iEvt.userChoice;if(outcome==='accepted')$('installBar').classList.add('hidden');});
+  $('installClose').addEventListener('click',()=>$('installBar').classList.add('hidden'));
+
+  $('navScanner').addEventListener('click',()=>showPage('scanner'));
+  $('navBulk').addEventListener('click',()=>showPage('bulk'));
+  $('navDash').addEventListener('click',()=>showPage('dash'));
+
+  $('btnSaveSettings').addEventListener('click',()=>{readSettings();setStatus('stSettings','Settings saved','ok');});
+  $('btnContinueDraft').addEventListener('click',loadDraft);
+
+  $('btnStartScan').addEventListener('click',startLiveScan);
+  $('btnStopScan').addEventListener('click',stopLiveScan);
+  $('btnLookup').addEventListener('click',()=>runLookup($('lookupText').value));
+  $('lookupText').addEventListener('keydown',e=>{if(e.key==='Enter')runLookup($('lookupText').value);});
+  $('btnUploadBarcode').addEventListener('click',()=>$('inputBarcode').click());
+  $('inputBarcode').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;setStatus('stIdentify','Reading barcode…');const code=await scanFileForBarcode(f);e.target.value='';if(code){$('lookupText').value=code;setStatus('stIdentify',`Detected: ${code}`,'ok');runLookup(code);}else setStatus('stIdentify','No barcode found — type UPC manually','warn');});
+  $('btnUploadProduct').addEventListener('click',()=>$('inputProduct').click());
+  $('inputProduct').addEventListener('change',e=>{[...e.target.files].slice(0,10-S.photos.length).forEach(f=>{const r=new FileReader();r.onload=()=>{S.photos.push(r.result);renderPhotos();};r.readAsDataURL(f);});e.target.value='';if(e.target.files.length)setStep(3);});
+  $('btnBackToIdentify').addEventListener('click',()=>setStep(1));
+  $('btnCamStart').addEventListener('click',startCam);
+  $('btnCamSwitch').addEventListener('click',async()=>{S.camFacing=S.camFacing==='environment'?'user':'environment';await startCam();});
+  $('btnCapture').addEventListener('click',capPhoto);
+  $('btnBurst').addEventListener('click',burstCap);
+  $('camVideo').addEventListener('click',e=>{const rect=e.target.getBoundingClientRect();const ring=$('focusRing');ring.style.left=(e.clientX-rect.left)+'px';ring.style.top=(e.clientY-rect.top)+'px';ring.classList.add('show');setTimeout(()=>ring.classList.remove('show'),500);});
+  $('btnAddPhotoFile').addEventListener('click',()=>$('inputPhotoFile').click());
+  $('inputPhotoFile').addEventListener('change',e=>{[...e.target.files].slice(0,10-S.photos.length).forEach(f=>{const r=new FileReader();r.onload=()=>{S.photos.push(r.result);renderPhotos();};r.readAsDataURL(f);});e.target.value='';});
+  $('btnBackToResults').addEventListener('click',()=>setStep(2));
+  $('btnToDetails').addEventListener('click',()=>{if(!S.photos.length)setStatus('stPhotos','Tip: Add at least one photo','warn');setStep(4);});
+  ['fTitle','fPrice','fCondition','fSource','fDescription'].forEach(id=>$(id).addEventListener('input',syncDetails));
+  $('btnBackToPhotos').addEventListener('click',()=>setStep(3));
+  $('btnToReview').addEventListener('click',()=>{syncDetails();if(!$('fTitle').value.trim())return setStatus('stDetails','Title required','warn');setStep(5);});
+  $('btnBackToDetails').addEventListener('click',()=>setStep(4));
+  $('btnSaveDraft').addEventListener('click',saveDraft);
+  $('btnSaveSupabase').addEventListener('click',saveToSupabase);
+  $('btnLaunchFBSingle').addEventListener('click',()=>{syncDetails();launchToFB(S.selected,S.photos,'stSave');});
+
+  // BULK
+  $('btnBulkStart').addEventListener('click',initBulkQueue);
+  $('btnBulkClear').addEventListener('click',()=>{B.queue=[];B.sel.clear();$('bulkInput').value='';$('bulkList').innerHTML='';$('bulkProgressCard').classList.add('hidden');$('bulkStatsRow').classList.add('hidden');$('bulkActionsBar').classList.add('hidden');$('bulkImportCard').classList.remove('hidden');$('btnBulkResume').classList.add('hidden');persistB();updateStats();setStatus('stBulkImport','');});
+  $('btnBulkResume').addEventListener('click',()=>{$('bulkImportCard').classList.add('hidden');$('bulkProgressCard').classList.remove('hidden');$('bulkStatsRow').classList.remove('hidden');$('bulkActionsBar').classList.remove('hidden');B.queue.filter(x=>x.status==='processing').forEach(x=>x.status='queued');startBulkProcessing();});
+  $('btnBulkPause').addEventListener('click',pauseBulkProcessing);
+  $('btnBulkCancel').addEventListener('click',cancelBulkProcessing);
+  $('btnBulkCSV').addEventListener('click',()=>$('inputBulkCSV').click());
+  $('btnBulkImages').addEventListener('click',()=>$('inputBulkImages').click());
+  $('inputBulkCSV').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const qs=parseBulkInput(r.result);$('bulkInput').value=qs.join('\n');setStatus('stBulkImport',`${qs.length} identifiers loaded`,'ok');};r.readAsText(f);e.target.value='';});
+  $('inputBulkImages').addEventListener('change',async e=>{const files=[...e.target.files]; if(!files.length) return; await processBulkIdentifierFiles(files); e.target.value='';});
+  $('bulkInput').addEventListener('input',()=>{const n=parseBulkInput($('bulkInput').value).length;setStatus('stBulkImport',n?`${n} identifier${n!==1?'s':''} detected (max 50)`:'','');});
+  document.querySelectorAll('.stat-pill').forEach(p=>p.addEventListener('click',()=>setFilter(p.dataset.bf)));
+  $('btnSelAll').addEventListener('click',selAll);
+  $('btnSelNone').addEventListener('click',selNone);
+  $('btnBulkSaveReady').addEventListener('click',bulkSaveReady);
+  $('btnBulkLaunch').addEventListener('click',launchSelected);
+  $('floatLaunch').addEventListener('click',launchSelected);
+  $('floatSave').addEventListener('click',bulkSaveReady);
+  $('floatDel').addEventListener('click',()=>{B.queue=B.queue.filter(x=>!B.sel.has(x.id));B.sel.clear();persistB();renderBulkList();updateStats();updateFloat();});
+
+  // BULK EDITOR
+  $('btnBeBack').addEventListener('click',()=>{stopBeCam();showPage('bulk');});
+  $('btnBePrev').addEventListener('click',()=>{const i=B.queue.findIndex(x=>x.id===B.editId);if(i>0){B.editId=B.queue[i-1].id;renderBeItem();}});
+  $('btnBeNext').addEventListener('click',()=>{const i=B.queue.findIndex(x=>x.id===B.editId);if(i<B.queue.length-1){B.editId=B.queue[i+1].id;renderBeItem();}});
+  document.querySelectorAll('.be-tab').forEach(b=>b.addEventListener('click',()=>setBeTab(b.dataset.bt)));
+  $('btnBeCamStart').addEventListener('click',startBeCam);
+  $('btnBeCamFlip').addEventListener('click',async()=>{B.beFacing=B.beFacing==='environment'?'user':'environment';await startBeCam();});
+  $('btnBeCapture').addEventListener('click',beCapture);
+  $('btnBeBurst').addEventListener('click',beBurst);
+  $('btnBeAddPhoto').addEventListener('click',()=>$('inputBePhoto').click());
+  $('inputBePhoto').addEventListener('change',e=>{const item=getItem();if(!item)return;[...e.target.files].slice(0,10-item.photos.length).forEach(f=>{const r=new FileReader();r.onload=()=>{item.photos.push(r.result);renderPhotos('bePhotosGrid',item.photos,'inputBePhoto');if(item.selected&&item.status==='found')item.status='ready';setStatus('stBePhotos',`${item.photos.length} photos`,'ok');};r.readAsDataURL(f);});e.target.value='';});
+  $('btnBeSaveDetails').addEventListener('click',saveBeDetails);
+  $('btnBeScrapeDetails').addEventListener('click',()=>runScrape($('beScrapeUrlDetails').value,'beScrapeAreaDetails','stBeScrapeDetails',(result)=>{
+    const item=getItem();if(!item)return;
+    // Fill in fields from scrape result — don't overwrite existing values unless empty
+    if(result.title&&!$('beTitle').value) $('beTitle').value=result.title;
+    if(result.price&&!$('bePrice').value) $('bePrice').value=result.price;
+    if(result.description&&!$('beDescription').value) $('beDescription').value=result.description;
+    if(result.source&&!$('beSource').value) $('beSource').value=result.source;
+    if(!item.selected) item.selected={};
+    item.selected.sourceUrl=result.sourceUrl||'';
+    renderBeDetails();
+    setStatus('stBeScrapeDetails','✓ Fields filled — review and tap Save Details','ok');
+  }));
+  $('beScrapeUrlDetails').addEventListener('keydown',e=>{ if(e.key==='Enter') $('btnBeScrapeDetails').click(); });
+  $('btnBeLaunchFB').addEventListener('click',()=>{const item=getItem();if(!item)return;saveBeDetails();launchToFB(item.selected||item.details,item.photos,'stBeLaunch');item.status='posted';item.postedAt=new Date().toISOString();persistB();updateStats();});
+  $('btnBeCopyText').addEventListener('click',()=>{const item=getItem();if(!item)return;copyText(buildListingText(item.selected||item.details),'stBeLaunch',true);});
+  $('btnBeSaveSupa').addEventListener('click',async()=>{const item=getItem();if(!item)return;saveBeDetails();readSettings();if(!S.settings.url||!S.settings.key)return setStatus('stBeSave','Supabase settings required','err');try{const p=await saveItemSupa(item.selected||item.details,item.photos,'stBeSave');S.drafts=[{...p,savedAt:new Date().toISOString()},...S.drafts].slice(0,60);item.status='posted';item.postedAt=new Date().toISOString();persist();persistB();updateStats();setStatus('stBeSave','✓ Saved!','ok');}catch(e){setStatus('stBeSave',e.message||'Save failed','err');}});
+  $('btnBeMarkPosted').addEventListener('click',()=>{const item=getItem();if(!item)return;item.status='posted';item.postedAt=new Date().toISOString();persistB();updateStats();setStatus('stBeSave','✓ Marked as posted','ok');});
+
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  if(B.queue.length){$('bulkStatsRow').classList.remove('hidden');$('bulkActionsBar').classList.remove('hidden');updateStats();}
+});
+</script>
+</body>
+</html>
